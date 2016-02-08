@@ -1,0 +1,64 @@
+
+<html>
+<HEAD>
+<TITLE>El problema del caballo</TITLE>
+  <SCRIPT LANGUAGE="JavaScript">
+    appletOnlineCargado=false;
+    function Enviar(cadea) {
+       try
+       {
+          if(appletOnlineCargado)
+            document.appletOnline.recibeJavascript(cadea);
+       } catch (JSException) {;}
+
+    }
+    function Recibir(cadea) {
+       try
+       {
+          document.salon.recibeJavascript(cadea);
+       } catch (JSException) {;}
+    }
+
+    function Cargando() {
+      MiVentana=open("../cargando.html","cargando","toolbar=no,directories=no,menubar=no,status=no,resizable=no,left=" + (screen.width/2-150) + ",top=" + (screen.height/2-75) + ",width=300,height=150");
+     }
+
+    function CerrarCargando()
+    {
+	MiVentana.close();
+    }
+
+    function CerrarMe()
+    {
+	top.close();
+    }
+
+    function AbrirELO()
+    {
+	open("ELO.php?a="+Math.round(Math.random()*10000000),"ELO","toolbar=no,directories=no,menubar=no,status=no,resizable=no,left=250,top=50,width=300,height=400");
+    }
+
+    function AbrirAyuda()
+    {
+        open("../ayuda_tablero.html","Ayuda","toolbar=no,directories=no,menubar=no,status=no,resizable=no,left=50,top=50,width=700,height=500");
+    }
+
+  </SCRIPT>
+</HEAD>
+<body bgcolor='#96664F' link="#EBDAB8" vlink="#EBDAB8" alink="#EBDAB8" border=0 topmargin=0 leftmargin=0 align='center' valign=center >
+<TABLE border='0' cellspacing='1px' cellpadding='0'  WIDTH='100%' align='center'>
+<TR>
+<TD>
+
+<SCRIPT LANGUAGE="Javascript" TYPE="text/javascript">
+document.write("<applet code=Salon.class  MAYSCRIPT NAME='salon' ");document.write("width=");
+document.write(screen.width-13);
+document.write(" height=");
+document.write(screen.height-120);
+document.write(">");
+</SCRIPT>
+	alt=Tu navegador no soporta applets java
+</applet>
+</font></TD></TR><TR><TD>
+
+</html>

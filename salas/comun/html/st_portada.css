@@ -1,0 +1,52 @@
+
+.corrcj2 {
+	COLOR: #000000; FONT-FAMILY: Verdana,Arial,Helvetica; FONT-SIZE: 11px
+}
+
+.corrcj2 {
+	COLOR: #000000; BACKGROUND-COLOR: #FFF8D6; BORDER-BOTTOM: #C3B290 1px solid; BORDER-LEFT: #C3B290 1px solid; BORDER-RIGHT: #C3B290 1px solid; BORDER-TOP: #C3B290 1px solid; WIDTH: 90px
+}
+
+
+
+
+
+A {
+	TEXT-DECORATION: none; font-weight: bold; FONT-FAMILY: Verdana,Arial,Helvetica; FONT-SIZE: 12px;
+}
+
+A:visited {
+	COLOR: #EBDAB8
+}
+
+A:link {
+	COLOR: #EBDAB8
+}
+
+A:hover {
+	COLOR: #F0F0F0
+}
+
+
+/* ESTILO CASINOS */ 
+
+.casinos, .casinos:visited {
+	TEXT-DECORATION: none; font-weight: bold; FONT-FAMILY: Verdana,Arial,Helvetica; FONT-SIZE: 14px;
+	color: black;
+	background-color: #EBDAB8;	
+}
+.casinos:hover {
+        TEXT-DECORATION: none; font-weight: bold; FONT-FAMILY: Verdana,Arial,Helvetica; FONT-SIZE: 14px;
+	color: #555555;
+	background-color: #EBDAB8;
+}
+.casinos:link {
+        TEXT-DECORATION: none; font-weight: bold; FONT-FAMILY: Verdana,Arial,Helvetica; FONT-SIZE: 14px;
+	color: black;
+	background-color: #EBDAB8;
+}
+.casinos:active {
+        TEXT-DECORATION: none; font-weight: bold; FONT-FAMILY: Verdana,Arial,Helvetica; FONT-SIZE: 14px;
+        color: black;
+	background-color: #EBDAB8;
+}

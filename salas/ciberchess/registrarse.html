@@ -1,0 +1,138 @@
+<HTML>
+<HEAD>
+<TITLE>CiberChess - Jugar Ajedrez Online</TITLE>
+<META content="text/html; charset=iso-8859-1" http-equiv=Content-Type><LINK 
+href="../comun/html/st_portada.css" rel=stylesheet 
+type=text/css>
+</HEAD>
+<body bgcolor='#00000'>
+
+  <TABLE BORDER=0 WIDTH='100%'>
+    <TR>
+	<TD ALIGN=center VALIGN=top>
+			<br>
+			<br>
+			<br>
+			<br>
+			<br>
+			<br>
+	  		<IMG SRC='../comun/imagenes/tablero.gif' width="150" height="150">  <br>
+	</TD>
+	<td align=center valign=top>
+	  <FORM action=../comun/php/alta.php method=post >
+	  <TABLE BORDER=0 WIDTH='100%' ALIGN=center >
+	    <TR>
+		<TD ALIGN=center VALIGN=top >
+		  <BR><IMG SRC='./imagenes/LogoHtml.jpg' &nbsp;<br>
+			<br>
+			<br>
+			<br>
+		</TD>
+          </TR>
+	    <TR ALIGN=center VALIGN=top>
+            <TD>
+		  <TABLE BORDER=0 WIDTH='100%' background="../comun/imagenes/fondo.jpg" >
+                <TR>
+  		      <TD ALIGN=LEFT VALIGN=top>
+                   <font size=2 face='Verdana, Arial, Helvetica, sans-serif' color=#EBDAB8>
+                    <B>REGISTRARSE&nbsp;&nbsp;</B>
+                   </font>          
+			  <A href="../comun/php/ayuda_registro.php?sala=ciberchess">
+                    <FONT face=ARIAL size=2>
+                    Informaci&oacute;n registro
+                    </font>
+                    </A>
+			  <B>&nbsp;&nbsp;</B>
+			  <A href="../comun/php/ayuda_informacion.php?sala=ciberchess">
+                    <FONT face=ARIAL size=2>
+                    ¿Que es CiberChess?
+                    </font>
+                    </A>
+                    <BR>
+                  </TD>
+                </TR>
+                <TR>
+                  <TD>
+                    <INPUT name='sala' type='hidden' value='ciberchess'>
+                    <INPUT name='idioma' type='hidden' value='spanish'>
+	            <TABLE BORDER=0 WIDTH='100%'>
+                      <TR>                        
+                        <TD>  
+                          <FONT color=#EBDAB8 face=ARIAL size=2>
+			          Login
+                           </FONT>
+                        </TD>
+                        <TD>
+                          <input name=login size=10>
+                        </TD>
+                      </TR>
+                      <TR>
+                        <TD>
+                          <FONT color=#EBDAB8 face=ARIAL size=2>
+				    Clave
+                          </FONT>
+                        </TD>
+                        <TD>
+                          <input name=password size=10 type=password>
+                        </TD>
+                      </TR>
+                      <TR>
+                        <TD>				    
+                          <FONT color=#EBDAB8 face=ARIAL size=2>
+  			          Repite Clave 
+                          </FONT>
+                        </TD>
+                        <TD>
+                          <INPUT name=repassword size=10 type=password>
+                        </TD>
+                      </TR>
+                      <TR>
+                        <TD>
+                          <FONT color=#EBDAB8 face=ARIAL size=2>
+				    e-mail
+                          </FONT>
+                        </TD>
+                        <TD>
+                          <INPUT name=email size=32>
+                          <FONT color=#EBDAB8 face=ARIAL size=2>
+				    opcional
+                          </FONT>
+                          
+                          <SCRIPT LANGUAGE="JavaScript">
+			     document.write("<INPUT TYPE=HIDDEN NAME='ancho' VALUE='"+screen.width+"'>");
+			     document.write("<INPUT TYPE=HIDDEN NAME='alto' VALUE='"+screen.height+"'>");			                          
+			  </SCRIPT>                          
+                          
+                          
+                        </TD>
+                      </TR>
+                      <TR>
+				</TD>
+                        <TD>
+			      <TD>
+                          <BR>
+				  <INPUT type=submit value=Enviar>
+                        </TD>
+                      </TR>
+                    </TABLE>
+                  </TD>
+		    </TR>
+		  </TABLE>
+		  </FORM>
+		</td>
+		<td align=center valign=top>
+			<p>    <applet code=Xadrez.class codebase='../comun/java' width=150 height=150>
+					<param name=entrar value=no>
+					<param name=blanco value=no>
+					<param name=retardo value=20>
+					alt=Tu navegador no soporta applets java 
+				</applet>  
+			</p>
+		</td>
+	    </TR>
+	  </TABLE>
+      </td>
+    </TR>
+  </TABLE>
+</BODY>
+</HTML>

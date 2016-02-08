@@ -1,0 +1,416 @@
+<?php
+
+
+  session_start();
+  $login=$_SESSION["loginsesion"];
+  $password=$_SESSION["passwordsesion"];
+  $idioma=$_SESSION["idiomasesion"];
+  
+
+  header('Content-type: application/x-java-jnlp-file');
+  header( "Cache-Control: cache" );  
+  echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?> ";
+  echo "<jnlp spec=\"1.0+\" codebase=\"http://localhost/ciberchess/salas/comun/java/salon.jnlp?login=" . $login . "&password=" . $password . "&sala=" . $sala . "\">\n ";
+  echo "<information>  ";
+  if ($idioma=="english")
+    echo "<title>CiberChess - Chess online</title> \n ";
+  else
+    echo "<title>CiberChess - Ajedrez on line</title> \n ";
+  echo "<vendor>www.ciberchess.com</vendor> \n ";
+  echo "<homepage href=\"www.ciberchess.com\"/> \n ";
+  if ($idioma=="english")
+  {
+    echo "<description>Site to play chess online</description> \n ";
+    echo "<description kind=\"short\">Site to play chess online</description> \n ";
+  } 
+  else
+  {
+    echo "<description>Sitio para jugar ajedrez online</description> \n ";
+    echo "<description kind=\"short\">Sitio para jugar ajedrez online</description> \n ";
+  }
+  echo "<icon href=\"../../ciberchess/imagenes/icono64.jpg\"/>";
+  echo "<icon kind=\"splash\" href=\"../../ciberchess/imagenes/icono32.jpg\"/>";
+  echo "<offline-allowed/>  \n";
+  echo "</information> \n ";
+  echo "<resources> \n ";
+  echo "<j2se version=\"1.2+\" /> \n ";
+  echo "<jar href=\"tablero.jar\"/> \n ";
+  echo "</resources> \n ";
+
+
+
+
+srand((double)microtime()*1000000);
+
+$ancho=$ancho-6;
+$alto=$alto-95;
+
+include "../php/ConexionBD.php";
+
+$login = strtoupper($login);
+$password = strtoupper($password);
+
+	$result = mysql_query("UPDATE claves
+	                       SET t = now()
+	 		           WHERE login='$login'", $link);
+
+	$result2 = mysql_query("SELECT *
+	                       FROM configuracion 
+	                       WHERE concepto = 'servidor'", $link);
+
+	$result3 = mysql_query("SELECT *
+	                       FROM configuracion 
+	                       WHERE concepto = 'puertoSalon'", $link);
+
+	$result4 = mysql_query("SELECT *
+	                       FROM configuracion 
+	                       WHERE concepto = 'numImaxesArte'", $link);
+	
+	$result5 = mysql_query("SELECT *
+	                       FROM partida
+	                       WHERE (loginb = '$login'
+	                         OR loginn = '$login')
+                                AND ganador LIKE ''", $link);
+
+	$result6 = mysql_query("SELECT *
+	                       FROM claves 
+	                       WHERE login = '$login'", $link);
+        $elo = mysql_result($result6, 0, "ELO");
+        if(is_null(mysql_result($result6, 0, "tempoDesexado")))
+          $tempoDesexado="A|10";
+        else 
+          $tempoDesexado=mysql_result($result6, 0, "tempoDesexado");
+        if(is_null(mysql_result($result6, 0, "incrementoDesexado")))
+          $incrementoDesexado="1";
+        else 
+          $incrementoDesexado=mysql_result($result6, 0, "incrementoDesexado");
+        if(is_null(mysql_result($result6, 0, "colorDesexado")))
+          $colorDesexado="Bla";
+        else 
+          $colorDesexado=mysql_result($result6, 0, "colorDesexado");                    
+        $tempoIncCol = $tempoDesexado."]".$incrementoDesexado."]".$colorDesexado;	                       
+ 
+        $result7 = mysql_query("SELECT count(*) as cuenta FROM fraseMarquesina", $link);
+        $contadorFrases = mysql_result($result7, 0, "cuenta");
+
+
+        $numeroFraseAleatoria=rand()%$contadorFrases+1;
+
+	$result8 = mysql_query("SELECT frase
+	                       FROM fraseMarquesina 
+	                       WHERE numero = $numeroFraseAleatoria", $link);
+	$fraseMarquesina = mysql_result($result8, 0, "frase");
+
+	$result9 = mysql_query("SELECT *
+	                        FROM color
+                                ORDER BY codigo", $link);
+                                
+       	$result10 = mysql_query("DESCRIBE claves", $link);  
+       	$existeContribucion=false;
+       	
+	if (($row = mysql_fetch_array($result10)))
+	{  
+	  do 
+	  { 
+            if(strcmp("smss",$row["Field"])==0)
+            {
+              $existeContribucion=true;
+            }
+	  }while (($row = mysql_fetch_array($result10)));
+	}       	
+	
+	$finVIP="";
+	$sql = "SELECT count(*) as cuenta";
+	$sql = $sql . " FROM claves";
+	$sql = $sql . " WHERE login='$login'";
+	$sql = $sql . " AND password='$password'";
+	$sql = $sql . " AND finVIP>now()";
+	$result11 = mysql_query($sql, $link);
+	
+	if ( mysql_result($result11, 0, "cuenta") > 0)
+	{
+		$sql = "SELECT finVIP";
+		$sql = $sql . " FROM claves";
+		$sql = $sql . " WHERE login='$login'";
+		$sql = $sql . " AND password='$password'";
+		$result12 = mysql_query($sql, $link);	
+		$finVIP=mysql_result($result12, 0, "finVIP") ;
+	}
+       	
+	$sql = "SELECT palabra";
+	$sql = $sql . " FROM palabraprohibida";
+	$sql = $sql . " WHERE nivel=2";
+	$result14 = mysql_query($sql, $link);    
+	
+	$sql = "SELECT palabra";
+	$sql = $sql . " FROM palabraprohibida";
+	$sql = $sql . " WHERE nivel=1";
+	$result15 = mysql_query($sql, $link);	   	       	                              
+                       
+	$sql = "SELECT valor";
+	$sql = $sql . " FROM configuracion";
+	$sql = $sql . " WHERE concepto='publicidade'";
+	$result16 = mysql_query($sql, $link);
+       	
+       	$publicidade="no";
+	if (($row = mysql_fetch_array($result16)))
+	{  
+	  $publicidade=$row["valor"];
+	}                         
+	
+	$sql = "SELECT valor";
+	$sql = $sql . " FROM configuracion";
+	$sql = $sql . " WHERE concepto='webPublicidade'";
+	$result17 = mysql_query($sql, $link);
+       	
+       	$webPublicidade="http://www.ciberchess.com";
+	if (($row = mysql_fetch_array($result17)))
+	{  
+	  $webPublicidade=$row["valor"];
+	} 	
+                       
+                       
+                             
+        $invitado=(strcmp(str_replace("INVITADO","",$login),$login)!=0);	
+	
+
+
+                echo "<applet-desc documentBase=\"http://localhost/ciberchess/salas/comun/java\" main-class='Salon' name='Salon' width='" . $ancho . "' height='" . $alto . "' > ";
+		
+		if ($existeContribucion)
+		{
+		  echo "<param name=existeContribucion value=\"si\"/>\n";
+		  echo "<param name=fraseMarquesinaContribucion value=\"\"/>\n";
+		  echo "<param name=fraseChatPublicoContribucion value=\"" . iconv("ISO-8859-1","UTF-8","Oferta 6x5, usuario VIP 6 meses por 5 Euros a través de PayPal. O bien 30 días por un SMS. Menú Usuario/VIP.") . "\"/>\n";
+		}
+		else 
+		{
+		  echo "<param name=existeContribucion value=\"no\"/>\n";
+		}
+		
+                $usaColorAleatorio=mysql_result($result6, 0, "colorAleatorio")==1;
+                $colorAleatorio=rand() % 10;
+		$contador=0;
+		if (($row = mysql_fetch_array($result9)))
+		{  
+		  do 
+		  { 
+		        if($contador==$colorAleatorio)
+		        {
+		          $colorAleatorioFondoRojo=$row["FondoRojo"];
+		          $colorAleatorioFondoVerde=$row["FondoVerde"];
+		          $colorAleatorioFondoAzul=$row["FondoAzul"];
+		          $colorAleatorioFrenteRojo=$row["FrenteRojo"];
+		          $colorAleatorioFrenteVerde=$row["FrenteVerde"];
+		          $colorAleatorioFrenteAzul=$row["FrenteAzul"];
+		        }
+			echo "<param name=ColorFondoRojo".$contador." value='".$row["FondoRojo"]."'/>\n";
+			echo "<param name=ColorFondoVerde".$contador." value='".$row["FondoVerde"]."'/>\n";
+			echo "<param name=ColorFondoAzul".$contador." value='".$row["FondoAzul"]."'/>\n";
+			echo "<param name=ColorFrenteRojo".$contador." value='".$row["FrenteRojo"]."'/>\n";
+			echo "<param name=ColorFrenteVerde".$contador." value='".$row["FrenteVerde"]."'/>\n";
+			echo "<param name=ColorFrenteAzul".$contador." value='".$row["FrenteAzul"]."'/>\n";
+			$contador++;
+		  }while (($row = mysql_fetch_array($result9)));
+		}		
+
+		if($usaColorAleatorio)
+		  echo "<param name=ColorAleatorio value='1'/>\n";
+		else
+		  echo "<param name=ColorAleatorio value='0'/>\n";
+
+                if(mysql_result($result6, 0, "colorRojoFondo")==null || 
+                   $invitado ||
+                   $usaColorAleatorio)
+                  echo "<param name=colorSalon value='".$colorAleatorioFondoRojo.",".$colorAleatorioFondoVerde.",".$colorAleatorioFondoAzul."'/>\n";
+                else
+                {
+                  echo "<param name=colorSalon value='";
+                  echo mysql_result($result6, 0, "colorRojoFondo");
+                  echo ",";
+                  echo mysql_result($result6, 0, "colorVerdeFondo");
+                  echo ",";
+                  echo mysql_result($result6, 0, "colorAzulFondo");                
+                  echo "'/>\n";
+                }
+                if(mysql_result($result6, 0, "colorRojoFrente")==null || 
+                   $invitado ||
+                   $usaColorAleatorio)
+                  echo "<param name=colorObxetos value='".$colorAleatorioFrenteRojo.",".$colorAleatorioFrenteVerde.",".$colorAleatorioFrenteAzul."'/>\n";
+                else
+                {                
+                  echo "<param name=colorObxetos value='";
+                  echo mysql_result($result6, 0, "colorRojoFrente");
+                  echo ",";
+                  echo mysql_result($result6, 0, "colorVerdeFrente");
+                  echo ",";
+                  echo mysql_result($result6, 0, "colorAzulFrente");                
+                  echo "'/>\n";                
+                  echo "<param name=colorFondo value='0,0,0'/>\n";
+                }
+
+                echo "<param name='traxectoriaLogo' value='../../ciberchess/imagenes/LogoJava.gif'/>\n";
+                echo "<param name='traxectoriaLogoV' value='../../ciberchess/imagenes/LogoHtmlV.jpg'/>\n";                
+		echo "<param name='sala' value='".$sala."'/>\n";    
+		echo "<param name='idioma' value='".$idioma."'/>\n";            
+		echo "<param name='login' value='" . iconv("ISO-8859-1","UTF-8",$login) . "'/>\n";
+		echo "<param name='clave' value='" . iconv("ISO-8859-1","UTF-8",$password) . "'/>\n";
+		echo "<param name='elo' value='".$elo."'/>\n";
+		echo "<param name='tempoIncCol' value='".$tempoIncCol."'/>\n";
+		echo "<param name='finVIP' value='".$finVIP."'/>\n";
+		echo "<param name='hora' value='".date("H")."'/>\n";
+		echo "<param name='minuto' value='".date("i")."'/>\n";
+		echo "<param name='segundo' value='".date("s")."'/>\n";		
+                $contador = 1;
+		if (($row = mysql_fetch_array($result5)))
+		{		  
+		  do 
+		  { 
+			echo "<param name=m".$contador." value='".$row["partida"]."'/>\n";
+			echo "<param name=tb".$contador." value='".$row["tb"]."'/>\n";
+			echo "<param name=tn".$contador." value='".$row["tn"]."'/>\n";
+			echo "<param name=ritmo".$contador." value='".$row["ritmo"]."'/>\n";
+			echo "<param name=incrementos".$contador." value='".$row["incrementos"]."'/>\n";
+			echo "<param name=b".$contador." value='" . iconv("ISO-8859-1","UTF-8",$row["loginb"]) . "'/>\n";
+			echo "<param name=n".$contador." value='" . iconv("ISO-8859-1","UTF-8",$row["loginn"]) . "'/>\n";
+			echo "<param name='t".$contador."' value='".$row["t"]."'/>\n";
+			if(strcmp($row["loginb"],$login)==0)
+				echo "	<param name=l".$contador." value='b'/>\n";
+			else
+				echo "	<param name=l".$contador." value='n'/>\n";
+			$contador++;
+		  }while (($row = mysql_fetch_array($result5)) && $contador<=5);
+		}
+		
+		do 
+		{ 
+			echo "<param name=m".$contador." value=''/>\n";
+			echo "<param name=b".$contador." value=''/>\n";
+			echo "<param name=n".$contador." value=''/>\n";
+			echo "	<param name=l".$contador." value=''/>\n";
+			$contador++;
+		} while ($contador<=5);
+		
+		
+		
+		echo "<param name='i' value='si'";
+		echo "/>\n";
+		
+		echo "<param name='s' value='";
+		echo mysql_result($result2, 0, "valor");
+		echo "'/>\n";
+		echo "<param name='ps' value='";
+		echo mysql_result($result3, 0, "valor");
+		echo "'/>\n";
+		echo "<param name='numImaxesArte' value='";
+		echo mysql_result($result4, 0, "valor");
+		echo "'/>\n";
+		echo "<param name='fraseMarquesina' value='";
+                echo iconv("ISO-8859-1","UTF-8",$fraseMarquesina);
+		echo "'/>\n";
+
+		  echo "<param name=columnCount value='2'/>\n";
+		  echo "<param name=header value='Login, ELO'/>\n";
+		  echo "<param name=selectionMode value='single'/>\n";
+		  echo "<param name=columnWidth value='130, 50'/>\n";		
+		
+		
+	        echo "<param name=columnStretchOn value='true'/>\n";
+		echo "<param name=columnAlignment value='left, left, left'/>\n";
+		echo "<param name=columnType value='text, number, number'/>\n";
+		echo "<param name=filterWildCard value=''/>\n";
+		echo "<param name=urltarget value='test'/>\n";
+		echo "<param name=urlColor value='blue'/>\n";
+		
+                if(mysql_result($result6, 0, "colorRojoFondo")==null  || 
+                   $invitado ||
+                   $usaColorAleatorio)
+                  echo "<param name=foreground value='".($colorAleatorioFondoRojo-50).",".($colorAleatorioFondoVerde-50).",".($colorAleatorioFondoAzul-50)."'/>\n";
+                else
+                {		
+                  echo "<param name=foreground value='";
+                  echo mysql_result($result6, 0, "colorRojoFondo")-50;
+                  echo ",";
+                  echo mysql_result($result6, 0, "colorVerdeFondo")-50;
+                  echo ",";
+                  echo mysql_result($result6, 0, "colorAzulFondo")-50; 
+                  echo "'/>\n";                
+                }
+                if(mysql_result($result6, 0, "colorRojoFrente")==null || 
+                   $invitado ||
+                   $usaColorAleatorio)
+                  echo "<param name=background value='".$colorAleatorioFrenteRojo.",".$colorAleatorioFrenteVerde.",".$colorAleatorioFrenteAzul."'/>\n";
+                else
+                {		                
+                  echo "<param name=background value='";
+                  echo mysql_result($result6, 0, "colorRojoFrente");
+                  echo ",";
+                  echo mysql_result($result6, 0, "colorVerdeFrente");
+                  echo ",";
+                  echo mysql_result($result6, 0, "colorAzulFrente");                
+                  echo "'/>\n";  
+                }
+                if(mysql_result($result6, 0, "colorRojoFrente")==null || 
+                   $invitado ||
+                   $usaColorAleatorio)
+                  echo "<param name=rowBackground value='".($colorAleatorioFrenteRojo+30).",".($colorAleatorioFrenteVerde+40).",".($colorAleatorioFrenteAzul+40)."'/>\n";
+                else
+                {		                
+                  echo "<param name=rowBackground value='";
+                  echo mysql_result($result6, 0, "colorRojoFrente")+30;
+                  echo ",";
+                  echo mysql_result($result6, 0, "colorVerdeFrente")+40;
+                  echo ",";
+                  echo mysql_result($result6, 0, "colorAzulFrente")+40;                
+                  echo "'/>\n";  
+                } 		
+                if(mysql_result($result6, 0, "colorRojoFondo")==null ||
+                   $invitado ||
+                   $usaColorAleatorio)
+                  echo "<param name=rowForeground value='".$colorAleatorioFondoRojo.",".$colorAleatorioFondoVerde.",".$colorAleatorioFondoAzul."'/>\n";
+                else
+                {		
+                  echo "<param name=rowForeground value='";
+                  echo mysql_result($result6, 0, "colorRojoFondo")-50;
+                  echo ",";
+                  echo mysql_result($result6, 0, "colorVerdeFondo")-50;
+                  echo ",";
+                  echo mysql_result($result6, 0, "colorAzulFondo")-50; 
+                  echo "'/>\n";                
+                }
+                echo "<param name=gridon value='true'/>\n";
+		echo "<param name=gridcolor value='205, 186, 158'/>\n";
+
+                $contador=1;
+		if (($row = mysql_fetch_array($result14)))
+		{  
+		  do 
+		  { 
+			echo "<param name='ppg".$contador."' value='".$row["palabra"]."'/>\n";
+			$contador++;
+		  }while (($row = mysql_fetch_array($result14)));
+		}
+		
+                $contador=1;
+		if (($row = mysql_fetch_array($result15)))
+		{  
+		  do 
+		  { 
+			echo "<param name='ppl".$contador."' value='".$row["palabra"]."'/>\n";
+			$contador++;
+		  }while (($row = mysql_fetch_array($result15)));
+		}		
+		
+		echo "<param name='publicidade' value='".$publicidade."'/>\n";
+		
+		echo "<param name='webPublicidade' value='".$webPublicidade."'/>\n";		
+
+		echo "</applet-desc>\n";
+
+					
+
+?>
+<security>
+
+</security>
+</jnlp>
